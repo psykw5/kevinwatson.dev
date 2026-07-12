@@ -1,0 +1,25 @@
+{
+  "name": "kevinwatson-dev",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "dev": "node ./scripts/astro.mjs dev",
+    "build": "node ./scripts/astro.mjs build",
+    "preview": "node ./scripts/astro.mjs preview",
+    "lint": "node ./scripts/astro.mjs check",
+    "check": "node ./scripts/astro.mjs check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "astro": "^5.11.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "prettier": "^3.3.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.5.4"
+  }
+}

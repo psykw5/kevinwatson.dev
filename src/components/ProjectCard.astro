@@ -1,0 +1,41 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  status?: string;
+  description: string;
+  technologies?: string[];
+  placeholder?: boolean;
+}
+
+const {
+  title,
+  subtitle,
+  status,
+  description,
+  technologies = [],
+  placeholder = false,
+} = Astro.props;
+---
+
+<article
+  class:list={["project-card", { "project-card-placeholder": placeholder }]}
+>
+  <div class="project-card-header">
+    <div>
+      <h3>{title}</h3>
+      {subtitle && <p class="project-subtitle">{subtitle}</p>}
+    </div>
+    {status && <span class="status-pill">{status}</span>}
+  </div>
+  <p>{description}</p>
+  {
+    technologies.length > 0 && (
+      <ul class="tech-list" aria-label={`${title} technologies`}>
+        {technologies.map((technology) => (
+          <li>{technology}</li>
+        ))}
+      </ul>
+    )
+  }
+</article>

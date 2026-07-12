@@ -1,0 +1,58 @@
+---
+import ProjectCard from "../components/ProjectCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const wattsonTechnologies = [
+  "Python",
+  "pandas",
+  "Docker",
+  "Home Assistant",
+  "GitHub Actions",
+  "Dash",
+  "PostgreSQL",
+];
+---
+
+<BaseLayout
+  title="Projects"
+  description="Engineering projects by Kevin Watson, including data engineering, analytics applications and decision-support tools."
+>
+  <section class="section page-intro">
+    <div class="container narrow">
+      <p class="eyebrow">Projects</p>
+      <h1>Practical engineering work, documented clearly.</h1>
+      <p class="lede">
+        Selected projects will be developed here as concise case studies with
+        architecture notes, implementation detail and outcomes when they are
+        ready to publish.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-muted" aria-label="Project list">
+    <div class="container project-grid">
+      <ProjectCard
+        title="Wattson"
+        subtitle="Home Energy Intelligence Platform"
+        status="In active development"
+        description="A personal energy analytics platform combining SolaX solar and battery data with tariff information, forecasting and optimisation. The project includes historical-data ingestion, validation, energy metrics, dashboards and future battery-control capabilities."
+        technologies={wattsonTechnologies}
+      />
+      <ProjectCard
+        title="Data Engineering"
+        description="Case study coming soon"
+        placeholder
+      />
+      <ProjectCard
+        title="Applied Machine Learning"
+        description="Case study coming soon"
+        placeholder
+      />
+      <ProjectCard
+        title="Data Visualisation"
+        description="Case study coming soon"
+        placeholder
+      />
+    </div>
+  </section>
+</BaseLayout>

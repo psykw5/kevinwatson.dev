@@ -1,0 +1,60 @@
+---
+import ProjectCard from "../components/ProjectCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const wattsonTechnologies = [
+  "Python",
+  "pandas",
+  "Docker",
+  "Home Assistant",
+  "GitHub Actions",
+  "Dash",
+  "PostgreSQL",
+];
+---
+
+<BaseLayout
+  description="Kevin Watson is a Data Engineer building reliable data pipelines, analytical applications and decision-support tools."
+>
+  <section class="hero section">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Data Engineer</p>
+        <h1>Kevin Watson</h1>
+        <p class="lede">
+          I build reliable data pipelines, analytical applications and
+          decision-support tools using Python, SQL and modern engineering
+          practices.
+        </p>
+        <div class="hero-actions" aria-label="Primary links">
+          <a class="button button-primary" href="/projects/">View projects</a>
+          <a class="button button-secondary" href="/about/">About</a>
+        </div>
+      </div>
+      <aside class="principles" aria-label="Engineering focus areas">
+        <h2>Engineering Focus</h2>
+        <ul>
+          <li>Reliable data movement and validation</li>
+          <li>Practical analytics and decision support</li>
+          <li>Clear interfaces for complex systems</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section-muted" aria-labelledby="featured-project">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">Featured Project</p>
+        <h2 id="featured-project">Wattson</h2>
+      </div>
+      <ProjectCard
+        title="Wattson"
+        subtitle="Home Energy Intelligence Platform"
+        status="In active development"
+        description="A personal energy analytics platform combining SolaX solar and battery data with tariff information, forecasting and optimisation. The project includes historical-data ingestion, validation, energy metrics, dashboards and future battery-control capabilities."
+        technologies={wattsonTechnologies}
+      />
+    </div>
+  </section>
+</BaseLayout>
