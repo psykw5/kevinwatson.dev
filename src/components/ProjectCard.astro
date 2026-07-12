@@ -5,6 +5,8 @@ interface Props {
   status?: string;
   description: string;
   technologies?: string[];
+  href?: string;
+  linkLabel?: string;
   placeholder?: boolean;
 }
 
@@ -14,6 +16,8 @@ const {
   status,
   description,
   technologies = [],
+  href,
+  linkLabel = "View project",
   placeholder = false,
 } = Astro.props;
 ---
@@ -36,6 +40,13 @@ const {
           <li>{technology}</li>
         ))}
       </ul>
+    )
+  }
+  {
+    href && (
+      <a class="project-link" href={href}>
+        {linkLabel}
+      </a>
     )
   }
 </article>

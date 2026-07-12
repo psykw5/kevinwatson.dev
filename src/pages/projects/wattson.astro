@@ -1,0 +1,251 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import wattsonSummary from "../../data/wattson-summary.json";
+import { calculateWattsonFinancials } from "../../lib/wattsonFinancials";
+
+const energy = wattsonSummary.lifetime_energy_kwh;
+const assumptions = wattsonSummary.financial_assumptions;
+const quality = wattsonSummary.data_quality;
+const financials = calculateWattsonFinancials(energy, assumptions);
+
+const pendingLabel = "Awaiting historic tariff integration";
+
+const formatKwh = (value: number) =>
+  `${value.toLocaleString("en-GB", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  })} kWh`;
+
+const formatPercent = (value: number) =>
+  `${value.toLocaleString("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}%`;
+
+const formatCurrency = (value: number | null) =>
+  value === null
+    ? pendingLabel
+    : value.toLocaleString("en-GB", {
+        style: "currency",
+        currency: "GBP",
+        maximumFractionDigits: 0,
+      });
+
+const formatOptionalPercent = (value: number | null) =>
+  value === null ? pendingLabel : formatPercent(value);
+
+const flowMax = Math.max(
+  energy.generation,
+  energy.household_consumption,
+  energy.grid_import,
+);
+
+const flowWidth = (value: number) => Math.max(8, (value / flowMax) * 100);
+
+const financialCards = [
+  {
+    label: "Estimated financial benefit",
+    value: formatCurrency(financials.totalEstimatedFinancialBenefit),
+  },
+  {
+    label: "Avoided import value",
+    value: formatCurrency(financials.avoidedImportValue),
+  },
+  {
+    label: "Export income",
+    value: formatCurrency(financials.exportIncome),
+  },
+  {
+    label: "Estimated payback",
+    value: formatOptionalPercent(financials.estimatedPaybackPercentage),
+  },
+];
+
+const energyCards = [
+  {
+    label: "Solar generated",
+    value: formatKwh(energy.generation),
+  },
+  {
+    label: "Self-consumed solar",
+    value: formatKwh(energy.estimated_self_consumed_generation),
+  },
+  {
+    label: "Exported energy",
+    value: formatKwh(energy.grid_export),
+  },
+  {
+    label: "Self-consumption ratio",
+    value: formatPercent(energy.self_consumption_ratio_percent),
+  },
+];
+
+const flowItems = [
+  {
+    label: "Generation",
+    value: energy.generation,
+  },
+  {
+    label: "Self-consumption",
+    value: energy.estimated_self_consumed_generation,
+  },
+  {
+    label: "Export",
+    value: energy.grid_export,
+  },
+  {
+    label: "Grid import",
+    value: energy.grid_import,
+  },
+  {
+    label: "Household consumption",
+    value: energy.household_consumption,
+  },
+];
+---
+
+<BaseLayout
+  title="Wattson"
+  description="Public Wattson dashboard for aggregated home energy intelligence metrics."
+>
+  <section class="section page-intro">
+    <div class="container dashboard-hero">
+      <div>
+        <p class="eyebrow">Project Dashboard</p>
+        <h1>Wattson</h1>
+        <p class="project-subtitle">Home Energy Intelligence Platform</p>
+        <p class="lede">
+          Aggregated public metrics for a personal energy analytics platform
+          combining validated solar, battery and household energy summaries.
+        </p>
+      </div>
+      <div class="dashboard-actions">
+        <span class="status-pill">In active development</span>
+        <a class="button button-secondary" href="/projects/">Back to projects</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted" aria-labelledby="financial-heading">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">Financial KPIs</p>
+        <h2 id="financial-heading">Provisional blended-rate estimates</h2>
+      </div>
+      <div class="kpi-grid">
+        {
+          financialCards.map((card) => (
+            <article class="kpi-card">
+              <p>{card.label}</p>
+              <strong>{card.value}</strong>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="energy-heading">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">Energy KPIs</p>
+        <h2 id="energy-heading">Lifetime energy summary</h2>
+      </div>
+      <div class="kpi-grid">
+        {
+          energyCards.map((card) => (
+            <article class="kpi-card">
+              <p>{card.label}</p>
+              <strong>{card.value}</strong>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted" aria-labelledby="flow-heading">
+    <div class="container energy-flow-layout">
+      <div class="section-heading">
+        <p class="eyebrow">Energy Flow</p>
+        <h2 id="flow-heading">Lifetime flow overview</h2>
+        <p>
+          A simple proportional view of generation, self-consumption, export,
+          grid import and household consumption across the public reporting
+          period.
+        </p>
+      </div>
+      <div class="flow-panel" role="img" aria-labelledby="flow-heading">
+        {
+          flowItems.map((item) => (
+            <div class="flow-row">
+              <div class="flow-row-header">
+                <span>{item.label}</span>
+                <strong>{formatKwh(item.value)}</strong>
+              </div>
+              <div class="flow-track" aria-hidden="true">
+                <span style={`width: ${flowWidth(item.value)}%`} />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="methodology-heading">
+    <div class="container info-grid">
+      <article class="content-panel">
+        <h2 id="methodology-heading">Methodology</h2>
+        <p>
+          Energy totals come from validated SolaX historical reports. Financial
+          values are provisional blended-rate estimates.
+        </p>
+        <p>
+          Actual historic Octopus Flux rates and meter intervals are not yet
+          integrated. Figures will be replaced with interval-level tariff
+          calculations later.
+        </p>
+        <p>
+          Calculations exclude standing charges, system financing, maintenance,
+          degradation and opportunity cost.
+        </p>
+      </article>
+
+      <article class="content-panel">
+        <h2>Data Coverage and Quality</h2>
+        <dl class="definition-list">
+          <div>
+            <dt>Coverage dates</dt>
+            <dd>
+              <time datetime={wattsonSummary.coverage.start}>
+                {wattsonSummary.coverage.start}
+              </time>
+              to
+              <time datetime={wattsonSummary.coverage.end}>
+                {wattsonSummary.coverage.end}
+              </time>
+            </dd>
+          </div>
+          <div>
+            <dt>Source reports processed</dt>
+            <dd>{quality.source_reports_processed}</dd>
+          </div>
+          <div>
+            <dt>Failed files</dt>
+            <dd>{quality.failed_files}</dd>
+          </div>
+          <div>
+            <dt>Validation status</dt>
+            <dd>{quality.validation_status}</dd>
+          </div>
+          <div>
+            <dt>Financial status</dt>
+            <dd>Financial values remain provisional.</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

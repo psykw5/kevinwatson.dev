@@ -1,0 +1,24 @@
+{
+  "coverage": {
+    "start": "2023-01-24",
+    "end": "2026-07-12"
+  },
+  "lifetime_energy_kwh": {
+    "generation": 23036.78,
+    "grid_import": 10777.08,
+    "grid_export": 12423.75,
+    "household_consumption": 27158.46,
+    "estimated_self_consumed_generation": 10613.03,
+    "self_consumption_ratio_percent": 46.07
+  },
+  "financial_assumptions": {
+    "average_import_rate_gbp_per_kwh": null,
+    "average_export_rate_gbp_per_kwh": null,
+    "system_cost_gbp": null
+  },
+  "data_quality": {
+    "source_reports_processed": 43,
+    "failed_files": 0,
+    "validation_status": "Energy values have passed the project's ETL and validation checks."
+  }
+}
