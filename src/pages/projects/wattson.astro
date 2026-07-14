@@ -1,19 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import wattsonSummary from "../../data/wattson-summary.json";
-import { calculateWattsonFinancials } from "../../lib/wattsonFinancials";
-
-const energy = wattsonSummary.lifetime_energy_kwh;
-const assumptions = wattsonSummary.financial_assumptions;
-const quality = wattsonSummary.data_quality;
-const financials = calculateWattsonFinancials(energy, assumptions);
-
-const pendingLabel = "Awaiting historic tariff integration";
 
 const formatKwh = (value: number) =>
   `${value.toLocaleString("en-GB", {
-    minimumFractionDigits: 3,
-    maximumFractionDigits: 3,
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
   })} kWh`;
 
 const formatPercent = (value: number) =>
@@ -22,84 +14,94 @@ const formatPercent = (value: number) =>
     maximumFractionDigits: 2,
   })}%`;
 
-const formatCurrency = (value: number | null) =>
-  value === null
-    ? pendingLabel
-    : value.toLocaleString("en-GB", {
-        style: "currency",
-        currency: "GBP",
-        maximumFractionDigits: 0,
-      });
+const formatCurrency = (value: number) =>
+  value.toLocaleString("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
-const formatOptionalPercent = (value: number | null) =>
-  value === null ? pendingLabel : formatPercent(value);
+const formatMonth = (value: string) => {
+  const [year, month] = value.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-GB", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, 1)));
+};
+
+const lifetimeAvoidedImportValue =
+  wattsonSummary.lifetime_avoided_import_value_gbp;
+const lifetimeExportIncome = wattsonSummary.lifetime_export_income_gbp;
+const lifetimeFinancialBenefit = wattsonSummary.lifetime_financial_benefit_gbp;
+const lifetimeGeneration = wattsonSummary.lifetime_generation_kwh;
+const lifetimeExport = wattsonSummary.lifetime_export_kwh;
+const lifetimeSelfConsumed = wattsonSummary.lifetime_self_consumed_energy_kwh;
+const selfConsumptionRatio = (lifetimeSelfConsumed / lifetimeGeneration) * 100;
 
 const flowMax = Math.max(
-  energy.generation,
-  energy.household_consumption,
-  energy.grid_import,
+  lifetimeGeneration,
+  lifetimeSelfConsumed,
+  lifetimeExport,
 );
 
 const flowWidth = (value: number) => Math.max(8, (value / flowMax) * 100);
 
 const financialCards = [
   {
-    label: "Estimated financial benefit",
-    value: formatCurrency(financials.totalEstimatedFinancialBenefit),
+    label: "Lifetime financial benefit",
+    value: formatCurrency(lifetimeFinancialBenefit),
   },
   {
     label: "Avoided import value",
-    value: formatCurrency(financials.avoidedImportValue),
+    value: formatCurrency(lifetimeAvoidedImportValue),
   },
   {
     label: "Export income",
-    value: formatCurrency(financials.exportIncome),
+    value: formatCurrency(lifetimeExportIncome),
   },
   {
-    label: "Estimated payback",
-    value: formatOptionalPercent(financials.estimatedPaybackPercentage),
+    label: "Simple payback",
+    value: formatMonth(wattsonSummary.simple_payback_month),
+  },
+  {
+    label: "Discounted payback",
+    value: formatMonth(wattsonSummary.discounted_payback_month),
   },
 ];
 
 const energyCards = [
   {
     label: "Solar generated",
-    value: formatKwh(energy.generation),
+    value: formatKwh(lifetimeGeneration),
   },
   {
     label: "Self-consumed solar",
-    value: formatKwh(energy.estimated_self_consumed_generation),
+    value: formatKwh(lifetimeSelfConsumed),
   },
   {
     label: "Exported energy",
-    value: formatKwh(energy.grid_export),
+    value: formatKwh(lifetimeExport),
   },
   {
     label: "Self-consumption ratio",
-    value: formatPercent(energy.self_consumption_ratio_percent),
+    value: formatPercent(selfConsumptionRatio),
   },
 ];
 
 const flowItems = [
   {
     label: "Generation",
-    value: energy.generation,
+    value: lifetimeGeneration,
   },
   {
     label: "Self-consumption",
-    value: energy.estimated_self_consumed_generation,
+    value: lifetimeSelfConsumed,
   },
   {
     label: "Export",
-    value: energy.grid_export,
-  },
-  {
-    label: "Grid import",
-    value: energy.grid_import,
-  },
-  {
-    label: "Household consumption",
-    value: energy.household_consumption,
+    value: lifetimeExport,
   },
 ];
 ---
@@ -131,7 +133,7 @@ const flowItems = [
     <div class="container section-stack">
       <div class="section-heading">
         <p class="eyebrow">Financial KPIs</p>
-        <h2 id="financial-heading">Provisional blended-rate estimates</h2>
+        <h2 id="financial-heading">Validated tariff-covered benefit</h2>
       </div>
       <div class="kpi-grid">
         {
@@ -172,8 +174,7 @@ const flowItems = [
         <h2 id="flow-heading">Lifetime flow overview</h2>
         <p>
           A simple proportional view of generation, self-consumption, export,
-          grid import and household consumption across the public reporting
-          period.
+          and public financial-reporting energy totals.
         </p>
       </div>
       <div class="flow-panel" role="img" aria-labelledby="flow-heading">
@@ -200,12 +201,12 @@ const flowItems = [
         <h2 id="methodology-heading">Methodology</h2>
         <p>
           Energy totals come from validated SolaX historical reports. Financial
-          values are provisional blended-rate estimates.
+          values use tariff-covered Octopus unit-rate calculations.
         </p>
         <p>
-          Actual historic Octopus Flux rates and meter intervals are not yet
-          integrated. Figures will be replaced with interval-level tariff
-          calculations later.
+          The latest published snapshot covers reporting month
+          {wattsonSummary.reporting_month}, published in
+          {wattsonSummary.publication_month}.
         </p>
         <p>
           Calculations exclude standing charges, system financing, maintenance,
@@ -219,30 +220,27 @@ const flowItems = [
           <div>
             <dt>Coverage dates</dt>
             <dd>
-              <time datetime={wattsonSummary.coverage.start}>
-                {wattsonSummary.coverage.start}
-              </time>
-              to
-              <time datetime={wattsonSummary.coverage.end}>
-                {wattsonSummary.coverage.end}
-              </time>
+              Reporting month {wattsonSummary.reporting_month}; publication
+              month {wattsonSummary.publication_month}
             </dd>
           </div>
           <div>
-            <dt>Source reports processed</dt>
-            <dd>{quality.source_reports_processed}</dd>
+            <dt>Data quality status</dt>
+            <dd>{wattsonSummary.data_quality_status}</dd>
           </div>
           <div>
-            <dt>Failed files</dt>
-            <dd>{quality.failed_files}</dd>
+            <dt>Nominal recovery</dt>
+            <dd>{formatPercent(wattsonSummary.nominal_recovery_percentage)}</dd>
           </div>
           <div>
-            <dt>Validation status</dt>
-            <dd>{quality.validation_status}</dd>
+            <dt>Discounted recovery</dt>
+            <dd>
+              {formatPercent(wattsonSummary.discounted_recovery_percentage)}
+            </dd>
           </div>
           <div>
             <dt>Financial status</dt>
-            <dd>Financial values remain provisional.</dd>
+            <dd>Validated monthly financials.</dd>
           </div>
         </dl>
       </article>

@@ -1,24 +1,49 @@
 {
-  "coverage": {
-    "start": "2023-01-24",
-    "end": "2026-07-12"
-  },
-  "lifetime_energy_kwh": {
-    "generation": 23036.78,
-    "grid_import": 10777.08,
-    "grid_export": 12423.75,
-    "household_consumption": 27158.46,
-    "estimated_self_consumed_generation": 10613.03,
-    "self_consumption_ratio_percent": 46.07
-  },
-  "financial_assumptions": {
-    "average_import_rate_gbp_per_kwh": null,
-    "average_export_rate_gbp_per_kwh": null,
-    "system_cost_gbp": null
-  },
-  "data_quality": {
-    "source_reports_processed": 43,
-    "failed_files": 0,
-    "validation_status": "Energy values have passed the project's ETL and validation checks."
-  }
+  "annual_summaries": [
+    {
+      "avoided_import_value_gbp": 549.35,
+      "export_income_gbp": 353.88,
+      "generation_kwh": 6268.5,
+      "total_benefit_gbp": 903.23,
+      "year": 2023
+    },
+    {
+      "avoided_import_value_gbp": 776.5,
+      "export_income_gbp": 582.49,
+      "generation_kwh": 5900.9,
+      "total_benefit_gbp": 1358.99,
+      "year": 2024
+    },
+    {
+      "avoided_import_value_gbp": 1121.9,
+      "export_income_gbp": 518.02,
+      "generation_kwh": 6895.3,
+      "total_benefit_gbp": 1639.92,
+      "year": 2025
+    },
+    {
+      "avoided_import_value_gbp": 623.78,
+      "export_income_gbp": 188.83,
+      "generation_kwh": 3797.0,
+      "total_benefit_gbp": 812.61,
+      "year": 2026
+    }
+  ],
+  "data_quality_status": "validated_monthly_financials",
+  "discounted_payback_month": "2035-05",
+  "discounted_recovery_percentage": 33.03,
+  "lifetime_avoided_import_value_gbp": 3071.53,
+  "lifetime_export_income_gbp": 1643.22,
+  "lifetime_export_kwh": 12420.5,
+  "lifetime_financial_benefit_gbp": 4714.75,
+  "lifetime_generation_kwh": 22861.7,
+  "lifetime_self_consumed_energy_kwh": 10441.2,
+  "monthly_avoided_import_value_gbp": 130.69,
+  "monthly_export_income_gbp": 43.94,
+  "monthly_generation_kwh": 823.3,
+  "monthly_total_benefit_gbp": 174.63,
+  "nominal_recovery_percentage": 36.27,
+  "publication_month": "2026-07",
+  "reporting_month": "2026-06",
+  "simple_payback_month": "2032-04"
 }
