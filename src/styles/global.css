@@ -444,8 +444,13 @@ p {
   gap: 1rem;
 }
 
+.kpi-grid-compact {
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
 .kpi-card,
-.flow-panel {
+.flow-panel,
+.recovery-panel {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: var(--surface);
@@ -470,6 +475,88 @@ p {
   color: var(--text);
   font-size: clamp(1.15rem, 2.4vw, 1.65rem);
   line-height: 1.15;
+}
+
+.kpi-note,
+.status-line {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.kpi-note {
+  line-height: 1.5;
+}
+
+.status-line {
+  margin-bottom: 0;
+}
+
+.recovery-panel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.recovery-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.recovery-panel-header h3 {
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+
+.recovery-panel-header p {
+  margin-bottom: 0;
+}
+
+.recovery-panel-header strong {
+  color: var(--text);
+  font-size: clamp(1.5rem, 4vw, 2.15rem);
+  line-height: 1;
+}
+
+.recovery-track {
+  height: 0.8rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+}
+
+.recovery-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+}
+
+.recovery-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.recovery-stats div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.recovery-stats dt {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.recovery-stats dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .energy-flow-layout {
@@ -599,6 +686,15 @@ p {
 
   .kpi-grid {
     grid-template-columns: 1fr;
+  }
+
+  .recovery-panel-header,
+  .recovery-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .recovery-panel-header {
+    display: grid;
   }
 
   .project-card:first-child {

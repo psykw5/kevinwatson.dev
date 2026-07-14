@@ -8,10 +8,10 @@ const formatKwh = (value: number) =>
     maximumFractionDigits: 1,
   })} kWh`;
 
-const formatPercent = (value: number) =>
+const formatPercent = (value: number, fractionDigits = 2) =>
   `${value.toLocaleString("en-GB", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   })}%`;
 
 const formatCurrency = (value: number) =>
@@ -39,6 +39,13 @@ const lifetimeGeneration = wattsonSummary.lifetime_generation_kwh;
 const lifetimeExport = wattsonSummary.lifetime_export_kwh;
 const lifetimeSelfConsumed = wattsonSummary.lifetime_self_consumed_energy_kwh;
 const selfConsumptionRatio = (lifetimeSelfConsumed / lifetimeGeneration) * 100;
+const installationCost = 13000;
+const recoveredAmount = lifetimeFinancialBenefit;
+const remainingAmount = installationCost - recoveredAmount;
+const nominalRecoveryPercentage = wattsonSummary.nominal_recovery_percentage;
+const reportingMonthLabel = formatMonth(wattsonSummary.reporting_month);
+const publicationMonthLabel = formatMonth(wattsonSummary.publication_month);
+const dataQualityLabel = "validated";
 
 const flowMax = Math.max(
   lifetimeGeneration,
@@ -52,6 +59,10 @@ const financialCards = [
   {
     label: "Lifetime financial benefit",
     value: formatCurrency(lifetimeFinancialBenefit),
+  },
+  {
+    label: "Investment recovered",
+    value: formatPercent(nominalRecoveryPercentage, 1),
   },
   {
     label: "Avoided import value",
@@ -68,25 +79,45 @@ const financialCards = [
   {
     label: "Discounted payback",
     value: formatMonth(wattsonSummary.discounted_payback_month),
+    note: "Using a 5% opportunity-cost rate",
   },
 ];
 
 const energyCards = [
   {
-    label: "Solar generated",
+    label: "Lifetime generation",
     value: formatKwh(lifetimeGeneration),
   },
   {
-    label: "Self-consumed solar",
+    label: "Lifetime self-consumed energy",
     value: formatKwh(lifetimeSelfConsumed),
   },
   {
-    label: "Exported energy",
+    label: "Lifetime export",
     value: formatKwh(lifetimeExport),
   },
   {
-    label: "Self-consumption ratio",
-    value: formatPercent(selfConsumptionRatio),
+    label: "Self-consumption percentage",
+    value: formatPercent(selfConsumptionRatio, 1),
+  },
+];
+
+const latestReportingCards = [
+  {
+    label: "Generation",
+    value: formatKwh(wattsonSummary.monthly_generation_kwh),
+  },
+  {
+    label: "Avoided import value",
+    value: formatCurrency(wattsonSummary.monthly_avoided_import_value_gbp),
+  },
+  {
+    label: "Export income",
+    value: formatCurrency(wattsonSummary.monthly_export_income_gbp),
+  },
+  {
+    label: "Total financial benefit",
+    value: formatCurrency(wattsonSummary.monthly_total_benefit_gbp),
   },
 ];
 
@@ -133,11 +164,67 @@ const flowItems = [
     <div class="container section-stack">
       <div class="section-heading">
         <p class="eyebrow">Financial KPIs</p>
-        <h2 id="financial-heading">Validated tariff-covered benefit</h2>
+        <h2 id="financial-heading">Financial performance</h2>
+        <p>
+          Calculated from validated SolaX generation data and historical Octopus
+          import and export tariffs. Updated monthly.
+        </p>
+      </div>
+      <div class="kpi-grid kpi-grid-compact">
+        {
+          financialCards.map((card) => (
+            <article class="kpi-card">
+              <p>{card.label}</p>
+              <strong>{card.value}</strong>
+              {card.note && <small class="kpi-note">{card.note}</small>}
+            </article>
+          ))
+        }
+      </div>
+      <article class="recovery-panel" aria-labelledby="recovery-heading">
+        <div class="recovery-panel-header">
+          <div>
+            <h3 id="recovery-heading">Investment recovery</h3>
+            <p>
+              Against a {formatCurrency(installationCost)} installation cost.
+            </p>
+          </div>
+          <strong>{formatPercent(nominalRecoveryPercentage, 1)}</strong>
+        </div>
+        <div
+          class="recovery-track"
+          role="img"
+          aria-label={`Investment recovery ${formatPercent(nominalRecoveryPercentage, 1)}`}
+        >
+          <span style={`width: ${nominalRecoveryPercentage}%`}></span>
+        </div>
+        <dl class="recovery-stats">
+          <div>
+            <dt>Recovered amount</dt>
+            <dd>{formatCurrency(recoveredAmount)}</dd>
+          </div>
+          <div>
+            <dt>Remaining amount</dt>
+            <dd>{formatCurrency(remainingAmount)}</dd>
+          </div>
+          <div>
+            <dt>Progress</dt>
+            <dd>{formatPercent(nominalRecoveryPercentage, 1)}</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="energy-heading">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">Energy KPIs</p>
+        <h2 id="energy-heading">Energy performance</h2>
       </div>
       <div class="kpi-grid">
         {
-          financialCards.map((card) => (
+          energyCards.map((card) => (
             <article class="kpi-card">
               <p>{card.label}</p>
               <strong>{card.value}</strong>
@@ -148,15 +235,20 @@ const flowItems = [
     </div>
   </section>
 
-  <section class="section" aria-labelledby="energy-heading">
+  <section class="section section-muted" aria-labelledby="latest-heading">
     <div class="container section-stack">
       <div class="section-heading">
-        <p class="eyebrow">Energy KPIs</p>
-        <h2 id="energy-heading">Lifetime energy summary</h2>
+        <p class="eyebrow">Latest Reporting Month</p>
+        <h2 id="latest-heading">{reportingMonthLabel}</h2>
+        <p class="status-line">
+          Reporting month: {reportingMonthLabel} · Data quality: {
+            dataQualityLabel
+          }
+        </p>
       </div>
       <div class="kpi-grid">
         {
-          energyCards.map((card) => (
+          latestReportingCards.map((card) => (
             <article class="kpi-card">
               <p>{card.label}</p>
               <strong>{card.value}</strong>
@@ -205,8 +297,7 @@ const flowItems = [
         </p>
         <p>
           The latest published snapshot covers reporting month
-          {wattsonSummary.reporting_month}, published in
-          {wattsonSummary.publication_month}.
+          {reportingMonthLabel}, published in {publicationMonthLabel}.
         </p>
         <p>
           Calculations exclude standing charges, system financing, maintenance,
@@ -220,17 +311,17 @@ const flowItems = [
           <div>
             <dt>Coverage dates</dt>
             <dd>
-              Reporting month {wattsonSummary.reporting_month}; publication
-              month {wattsonSummary.publication_month}
+              Reporting month {reportingMonthLabel}; publication month
+              {publicationMonthLabel}
             </dd>
           </div>
           <div>
-            <dt>Data quality status</dt>
-            <dd>{wattsonSummary.data_quality_status}</dd>
+            <dt>Data quality</dt>
+            <dd>{dataQualityLabel}</dd>
           </div>
           <div>
             <dt>Nominal recovery</dt>
-            <dd>{formatPercent(wattsonSummary.nominal_recovery_percentage)}</dd>
+            <dd>{formatPercent(nominalRecoveryPercentage, 1)}</dd>
           </div>
           <div>
             <dt>Discounted recovery</dt>
