@@ -1,0 +1,203 @@
+﻿{
+  "representative_12_month": {
+    "scenarios": [
+      {
+        "scenario_id": "octopus_flux",
+        "net_cost_gbp": 805.57,
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "scenario_id": "agile_import_agile_outgoing",
+        "net_cost_gbp": 716.69,
+        "difference_vs_flux_gbp": -88.88
+      },
+      {
+        "scenario_id": "agile_import_flat_outgoing",
+        "net_cost_gbp": 598.96,
+        "difference_vs_flux_gbp": -206.61
+      }
+    ],
+    "monthly_scenarios": [
+      {
+        "month": "2025-07",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-07",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": 15.62
+      },
+      {
+        "month": "2025-07",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -4.43
+      },
+      {
+        "month": "2025-08",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-08",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": 15.46
+      },
+      {
+        "month": "2025-08",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -14.59
+      },
+      {
+        "month": "2025-09",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-09",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -1.14
+      },
+      {
+        "month": "2025-09",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -20.36
+      },
+      {
+        "month": "2025-10",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-10",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -24.56
+      },
+      {
+        "month": "2025-10",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -29.39
+      },
+      {
+        "month": "2025-11",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-11",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -31.34
+      },
+      {
+        "month": "2025-11",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -33.82
+      },
+      {
+        "month": "2025-12",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2025-12",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -42.04
+      },
+      {
+        "month": "2025-12",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -43.21
+      },
+      {
+        "month": "2026-01",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-01",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -19.27
+      },
+      {
+        "month": "2026-01",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -21.08
+      },
+      {
+        "month": "2026-02",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-02",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -29.49
+      },
+      {
+        "month": "2026-02",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -33.55
+      },
+      {
+        "month": "2026-03",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-03",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": -8.98
+      },
+      {
+        "month": "2026-03",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -11.84
+      },
+      {
+        "month": "2026-04",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-04",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": 9.58
+      },
+      {
+        "month": "2026-04",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": -6.25
+      },
+      {
+        "month": "2026-05",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-05",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": 13.06
+      },
+      {
+        "month": "2026-05",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": 6.59
+      },
+      {
+        "month": "2026-06",
+        "scenario_id": "octopus_flux",
+        "difference_vs_flux_gbp": 0.0
+      },
+      {
+        "month": "2026-06",
+        "scenario_id": "agile_import_agile_outgoing",
+        "difference_vs_flux_gbp": 14.22
+      },
+      {
+        "month": "2026-06",
+        "scenario_id": "agile_import_flat_outgoing",
+        "difference_vs_flux_gbp": 5.34
+      }
+    ]
+  }
+}

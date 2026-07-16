@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import wattsonSummary from "../../data/wattson-summary.json";
+import tariffComparison from "../../data/wattson-tariff-comparison.json";
 
 const formatKwh = (value: number) =>
   `${value.toLocaleString("en-GB", {
@@ -31,6 +32,9 @@ const formatMonth = (value: string) => {
   }).format(new Date(Date.UTC(year, month - 1, 1)));
 };
 
+const formatSignedCurrency = (value: number) =>
+  `${value > 0 ? "+" : ""}${formatCurrency(value)}`;
+
 const lifetimeAvoidedImportValue =
   wattsonSummary.lifetime_avoided_import_value_gbp;
 const lifetimeExportIncome = wattsonSummary.lifetime_export_income_gbp;
@@ -46,6 +50,23 @@ const nominalRecoveryPercentage = wattsonSummary.nominal_recovery_percentage;
 const reportingMonthLabel = formatMonth(wattsonSummary.reporting_month);
 const publicationMonthLabel = formatMonth(wattsonSummary.publication_month);
 const dataQualityLabel = "validated";
+const representativeComparison = tariffComparison.representative_12_month;
+const tariffScenarioById = new Map(
+  representativeComparison.scenarios.map((scenario) => [
+    scenario.scenario_id,
+    scenario,
+  ]),
+);
+const monthlyScenarioGroups = new Map<
+  string,
+  typeof representativeComparison.monthly_scenarios
+>();
+
+for (const scenario of representativeComparison.monthly_scenarios) {
+  const monthScenarios = monthlyScenarioGroups.get(scenario.month) ?? [];
+  monthScenarios.push(scenario);
+  monthlyScenarioGroups.set(scenario.month, monthScenarios);
+}
 
 const flowMax = Math.max(
   lifetimeGeneration,
@@ -135,6 +156,66 @@ const flowItems = [
     value: lifetimeExport,
   },
 ];
+
+const systemOverviewItems = [
+  "16 x 400 W panels",
+  "6.4 kWp installed capacity",
+  "SolaX X1 Hybrid G4 inverter",
+  "6 kWh SolaX battery",
+  "Approximately due-south orientation",
+  "Approximately 38\u00b0 roof pitch",
+  "No significant shading",
+  "Midlands, UK",
+  "Octopus Flux tariff",
+];
+
+const measuredFlowScenarios = [
+  {
+    id: "octopus_flux",
+    label: "Flux",
+    detail: "Baseline measured-flow cost",
+  },
+  {
+    id: "agile_import_agile_outgoing",
+    label: "Agile + Agile Outgoing",
+    detail: "Compatibility unconfirmed",
+  },
+  {
+    id: "agile_import_flat_outgoing",
+    label: "Agile + flat Outgoing",
+    detail: "Compatibility unconfirmed",
+  },
+].map((scenario) => ({
+  ...scenario,
+  data: tariffScenarioById.get(scenario.id),
+}));
+
+const comparisonScenarioIds = [
+  "agile_import_agile_outgoing",
+  "agile_import_flat_outgoing",
+];
+const monthlyComparisonRows = [...monthlyScenarioGroups.entries()].map(
+  ([month, scenarios]) => ({
+    month,
+    label: formatMonth(month).replace(" 20", " '"),
+    values: comparisonScenarioIds.map((scenarioId) => {
+      const scenario = scenarios.find(
+        (item) => item.scenario_id === scenarioId,
+      );
+      return {
+        scenarioId,
+        value: scenario?.difference_vs_flux_gbp ?? null,
+      };
+    }),
+  }),
+);
+const visibleMonthlyDifferences = monthlyComparisonRows
+  .flatMap((row) => row.values.map((item) => item.value))
+  .filter((value): value is number => value !== null);
+const monthlyDifferenceMax = Math.max(
+  1,
+  ...visibleMonthlyDifferences.map((value) => Math.abs(value)),
+);
 ---
 
 <BaseLayout
@@ -216,6 +297,18 @@ const flowItems = [
     </div>
   </section>
 
+  <section class="section" aria-labelledby="system-heading">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">System Overview</p>
+        <h2 id="system-heading">About the system</h2>
+      </div>
+      <ul class="system-list" aria-label="Wattson solar and battery system">
+        {systemOverviewItems.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+
   <section class="section" aria-labelledby="energy-heading">
     <div class="container section-stack">
       <div class="section-heading">
@@ -256,6 +349,118 @@ const flowItems = [
           ))
         }
       </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tariff-heading">
+    <div class="container section-stack">
+      <div class="section-heading">
+        <p class="eyebrow">Tariff What-if</p>
+        <h2 id="tariff-heading">What if I changed tariff?</h2>
+        <p>
+          These comparisons reprice the energy my home actually imported and
+          exported over a representative measured year. They do not assume that
+          household, battery or EV behaviour changed.
+        </p>
+      </div>
+
+      <div class="tariff-card-grid">
+        {
+          measuredFlowScenarios.map((scenario) => (
+            <article class="tariff-card">
+              <div>
+                <p>{scenario.label}</p>
+                <strong>
+                  {scenario.data
+                    ? formatCurrency(scenario.data.net_cost_gbp)
+                    : "Unavailable"}
+                </strong>
+              </div>
+              <span
+                class={
+                  scenario.id === "octopus_flux"
+                    ? "tariff-badge tariff-badge-current"
+                    : "tariff-badge"
+                }
+              >
+                {scenario.detail}
+              </span>
+              {scenario.id !== "octopus_flux" &&
+              scenario.data?.difference_vs_flux_gbp ? (
+                <small>
+                  {formatCurrency(
+                    Math.abs(scenario.data.difference_vs_flux_gbp),
+                  )}{" "}
+                  lower than Flux
+                </small>
+              ) : null}
+            </article>
+          ))
+        }
+      </div>
+
+      <article class="seasonality-panel" aria-labelledby="seasonality-heading">
+        <div class="seasonality-header">
+          <div>
+            <h3 id="seasonality-heading">Monthly seasonality versus Flux</h3>
+            <p>
+              Positive means Flux was cheaper; negative means the alternative
+              was cheaper.
+            </p>
+          </div>
+          <div class="seasonality-legend" aria-label="Tariff comparison legend">
+            <span
+              ><i class="legend-mark legend-agile"></i>Agile + Agile Outgoing</span
+            >
+            <span
+              ><i class="legend-mark legend-flat"></i>Agile + flat Outgoing</span
+            >
+          </div>
+        </div>
+
+        <div class="seasonality-chart" aria-labelledby="seasonality-heading">
+          {
+            monthlyComparisonRows.map((row) => (
+              <div class="seasonality-month">
+                <span class="seasonality-label">{row.label}</span>
+                <div class="seasonality-bars">
+                  <span class="seasonality-zero" aria-hidden="true" />
+                  {row.values.map((item) => (
+                    <span
+                      class={`seasonality-bar ${
+                        item.scenarioId === "agile_import_agile_outgoing"
+                          ? "seasonality-bar-agile"
+                          : "seasonality-bar-flat"
+                      } ${item.value && item.value < 0 ? "is-negative" : "is-positive"}`}
+                      style={`--bar-size: ${
+                        item.value === null
+                          ? 0
+                          : (Math.abs(item.value) / monthlyDifferenceMax) * 50
+                      }%;`}
+                      title={
+                        item.value === null
+                          ? "Insufficient coverage"
+                          : `${row.label}: ${formatSignedCurrency(item.value)}`
+                      }
+                    >
+                      <span class="sr-only">
+                        {item.value === null
+                          ? `${row.label}: insufficient coverage`
+                          : `${row.label}: ${formatSignedCurrency(item.value)}`}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+
+      <p class="experimental-note">
+        Tariff-aware battery optimisation is simulated and was not actually
+        carried out.
+      </p>
     </div>
   </section>
 
@@ -302,6 +507,12 @@ const flowItems = [
         <p>
           Calculations exclude standing charges, system financing, maintenance,
           degradation and opportunity cost.
+        </p>
+        <p>
+          Phase 1 runs from SolaX data through validation and canonical metrics,
+          then into Octopus tariffs and financial modelling, privacy-safe
+          monthly summaries and this public website. Detailed live weather,
+          household flows and forecasts remain private.
         </p>
       </article>
 
